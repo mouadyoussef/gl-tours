@@ -16,9 +16,29 @@ export class AppComponent {
       icon: 'home'
     },
     {
-      title: 'List',
+      title: 'Login',
+      url: '/login',
+      icon: 'md-log-in'
+    },
+    {
+      title: 'Sign up',
+      url: '/signup',
+      icon: 'md-person-add'
+    },
+    {
+      title: 'Profil',
+      url: '/profil',
+      icon: 'md-contact'
+    } ,
+    {
+      title: 'Ads',
       url: '/list',
       icon: 'list'
+    } ,
+    {
+      title: 'Log Out',
+      url: '/home',
+      icon: 'md-log-out'
     }
   ];
 
