@@ -1,4 +1,3 @@
-export interface Type {
-  id: number;
-  label: string;
+export class Type {
+  constructor(private id: number, private label: string) {}
 }
