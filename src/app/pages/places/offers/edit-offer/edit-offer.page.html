@@ -1,0 +1,165 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/places/tabs/offers"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Edit Offer</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onCancel()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="form">
+    <ion-grid>
+      <ion-row>
+        <ion-col size-md="6" offset-md="3">
+          <ion-item>
+            <ion-label position="floating">Name</ion-label>
+            <ion-input
+              type="text"
+              autocomplete
+              autocorrect
+              formControlName="name"
+              value="{{ offer.name }}"
+            ></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-label position="floating">Short Description</ion-label>
+            <ion-textarea
+              rows="2"
+              formControlName="description"
+              value="{{ offer.description }}"
+            ></ion-textarea>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row
+        *ngIf="
+          !form.get('description').valid && form.get('description').touched
+        "
+      >
+        <ion-col size-sm="6" offset-sm="3" margin>
+          <ion-label color="danger"
+            >Description must be under 180 characters.</ion-label
+          >
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="3" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating">Available From</ion-label>
+            <ion-datetime
+              display-format="MMM DD YYYY"
+              picker-format="YY MMM DD"
+              min="2019-01-01"
+              max="2025-12-31"
+              formControlName="dateFrom"
+              value="{{ offer.availableFrom }}"
+            ></ion-datetime>
+          </ion-item>
+        </ion-col>
+        <ion-col size-sm="3">
+          <ion-item>
+            <ion-label position="floating">Available To</ion-label>
+            <ion-datetime
+              display-format="MMM DD YYYY"
+              picker-format="YY MMM DD"
+              min="2019-01-02"
+              max="2025-12-31"
+              formControlName="dateTo"
+              value="{{ offer.availableTo }}"
+            ></ion-datetime>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="3" offset-sm="3">
+          <ion-item>
+            <ion-label position="floating">Min age</ion-label>
+            <ion-input
+              type="number"
+              min="18"
+              max="80"
+              formControlName="minAge"
+              value="{{ offer.minAge }}"
+            ></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size-sm="3">
+          <ion-item>
+            <ion-label position="floating">Max age</ion-label>
+            <ion-input
+              type="number"
+              min="18"
+              max="80"
+              formControlName="maxAge"
+              value="{{ offer.maxAge }}"
+            ></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row
+        *ngIf="
+          (!form.get('minAge').valid && form.get('minAge').touched) ||
+          (!form.get('maxAge').valid && form.get('maxAge').touched)
+        "
+      >
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-label color="danger"
+            >The age must be between 18 and 80</ion-label
+          >
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-radio-group lines="none" formControlName="sexe">
+            <ion-list-header>
+              <ion-label>Sexe</ion-label>
+            </ion-list-header>
+            <ion-item>
+              <ion-label>Male</ion-label>
+              <ion-radio slot="start" value="male" checke></ion-radio>
+            </ion-item>
+            <ion-item>
+              <ion-label>Female</ion-label>
+              <ion-radio slot="start" value="female"></ion-radio>
+            </ion-item>
+          </ion-radio-group>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-item line="none">
+            <ion-label>Range</ion-label>
+            <ion-range
+              color="primary"
+              pin="true"
+              min="5"
+              max="20"
+              formControlName="range"
+              value="{{ offer.range }}"
+            ></ion-range>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <div margin-vertical>
+            <ion-button
+              type="submit"
+              id="expense-add"
+              (click)="updateOffer()"
+              expand="block"
+            >
+              Save
+            </ion-button>
+          </div>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+</ion-content>

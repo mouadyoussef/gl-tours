@@ -2,22 +2,16 @@ import { NgModule } from "@angular/core";
 import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
 
 const routes: Routes = [
+  { path: "", redirectTo: "places", pathMatch: "full" },
+  { path: "login", loadChildren: "./pages/auth/auth.module#AuthPageModule" },
   {
-    path: "",
-    redirectTo: "home",
-    pathMatch: "full"
+    path: "signup",
+    loadChildren: "./pages/auth/signup/signup.module#SignupPageModule"
   },
   {
-    path: "home",
-    loadChildren: "./pages/home/home.module#HomePageModule"
-  },
-  {
-    path: "list",
-    loadChildren: "./components/list/list.module#ListPageModule"
-  },  { path: 'login', loadChildren: './pages/login/login.module#LoginPageModule' },
-  { path: 'signup', loadChildren: './signup/signup.module#SignupPageModule' },
-  { path: 'signup', loadChildren: './pages/signup/signup.module#SignupPageModule' }
-
+    path: "places",
+    loadChildren: "./pages/places/places.module#PlacesPageModule"
+  }
 ];
 
 @NgModule({

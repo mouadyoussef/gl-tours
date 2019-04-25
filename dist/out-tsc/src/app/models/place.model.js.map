@@ -1,0 +1,1 @@
+{"version":3,"file":"place.model.js","sourceRoot":"","sources":["../../../../../src/app/models/place.model.ts"],"names":[],"mappings":"AAAA;IAME,eAAY,EAAE,EAAE,IAAI,EAAE,IAAI,EAAE,OAAO;QACjC,IAAI,CAAC,EAAE,GAAG,EAAE,CAAC;QACb,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;QACjB,IAAI,CAAC,WAAW,GAAG,IAAI,CAAC;QACxB,IAAI,CAAC,OAAO,GAAG,OAAO,CAAC;IACzB,CAAC;IACH,YAAC;AAAD,CAAC,AAZD,IAYC"}
