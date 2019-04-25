@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>
+        <h4>Login</h4>
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form #form="ngForm" (ngSubmit)="login(form)">
+    <ion-grid>
+      <ion-row justify-content-center>
+        <ion-col align-self-center size-md="6" size-lg="5" size-xs="12">
+          <div style="height: 170px ;
+          width: 170px;margin-left: auto; margin-right: auto; ">
+              <ion-img src="/assets/images/login.jpg"></ion-img> 
+          </div>
+          <div padding>
+            <ion-item>
+              <ion-label position="floating">Username</ion-label>
+              <ion-input type="text"></ion-input>
+            </ion-item>
+    
+            <ion-item>
+              <ion-label position="floating">Password</ion-label>
+              <ion-input type="password" ></ion-input>
+            </ion-item>
+          </div>
+    
+          <div padding>
+            <ion-button size="default" href="/touchid" expand="block">Login</ion-button>
+          </div>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+      <ion-col>
+        <div text-center>
+        Don't have an account? <a routerLink='/signup'>Sign Up</a> 
+        </div>
+      </ion-col>
+    </ion-row>
+    </ion-grid>
+  </form>
+
+</ion-content>
