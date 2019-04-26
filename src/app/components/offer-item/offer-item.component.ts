@@ -15,12 +15,6 @@ export class OfferItemComponent implements OnInit {
 
   ngOnInit() {}
 
-  onEditOffer(id, slidingItem: IonItemSliding) {
-    slidingItem.close();
-    this.router.navigate(["/places/tabs/offers/edit", id]);
-    console.log("offer's id", id);
-  }
-
   onDeleteOffer(id, slidingItem: IonItemSliding) {
     slidingItem.close();
     this.offerServices.delete(parseInt(id));

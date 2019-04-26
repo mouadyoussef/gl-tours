@@ -6,4 +6,3 @@ export class Place {
     public picture: string
   ) {}
 }
-

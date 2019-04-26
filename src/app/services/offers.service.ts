@@ -1,11 +1,13 @@
 import { Injectable } from "@angular/core";
 import { Offer } from "../models/offer.model";
+import { BehaviorSubject, Observable } from "rxjs";
+import { take, map, tap, delay } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root"
 })
 export class OffersService {
-  private _offers: Offer[] = [
+  private _offers = new BehaviorSubject<Offer[]>([
     new Offer(
       1,
       "offer 1",
@@ -45,27 +47,52 @@ export class OffersService {
       "female",
       15
     )
-  ];
+  ]);
   constructor() {}
 
-  get(): Offer[] {
-    return [...this._offers];
+  get offers() {
+    return this._offers.asObservable();
   }
 
-  getById(id: number): Offer {
-    return { ...this._offers.find(o => o.id === id) };
+  getById(id: number) {
+    return this.offers.pipe(
+      take(1),
+      map(offers => {
+        return { ...offers.find(o => o.id === id) };
+      })
+    );
   }
 
   delete(id: number) {
-    this._offers = this._offers.filter(o => o.id !== id);
+    return this.offers.pipe(
+      take(1),
+      map(offers => {
+        return { ...offers.filter(o => o.id !== id) };
+      })
+    );
   }
 
   add(offer: Offer) {
-    this._offers.push(offer);
+    return this.offers.pipe(
+      take(1),
+      delay(1000),
+      tap(offers => {
+        this._offers.next(offers.concat(offer));
+      })
+    );
   }
 
-  update(offer: Offer) {
-    this.delete(offer.id);
-    this.add(offer);
+  update(newOffer: Offer) {
+    return this.offers.pipe(
+      take(1),
+      delay(1000),
+      tap(offers => {
+        const updatedOfferIndex = offers.findIndex(o => o.id === newOffer.id);
+        const updatedOffers = [...offers];
+        const oldOffer = updatedOffers[updatedOfferIndex];
+        updatedOffers[updatedOfferIndex] = newOffer;
+        this._offers.next(updatedOffers);
+      })
+    );
   }
 }

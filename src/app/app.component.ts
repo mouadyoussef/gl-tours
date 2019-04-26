@@ -18,12 +18,22 @@ export class AppComponent {
     {
       title: "Login",
       url: "/login",
-      icon: "home"
+      icon: "md-log-in"
     },
     {
       title: "Sign up",
       url: "/signup",
-      icon: "exit"
+      icon: "md-person-add"
+    },
+    {
+      title: "Profil",
+      url: "/places/tabs/profil/1",
+      icon: "md-contact"
+    },
+    {
+      title: "Log Out",
+      url: "/home",
+      icon: "md-log-out"
     }
   ];
 
