@@ -4,6 +4,7 @@ import { Offer } from "../../../../models/offer.model";
 import { OffersService } from "../../../../services/offers.service";
 import { Router, ActivatedRoute } from "@angular/router";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
+import { LoadingController } from "@ionic/angular";
 
 @Component({
   selector: "app-edit-offer",
@@ -18,7 +19,8 @@ export class EditOfferPage implements OnInit, OnDestroy {
   constructor(
     private offerService: OffersService,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private loadingCtrl: LoadingController
   ) {}
 
   ngOnInit() {
@@ -75,6 +77,7 @@ export class EditOfferPage implements OnInit, OnDestroy {
     if (!(this.form.valid && this.dateValidation())) {
       return;
     }
+
     console.log(this.form);
     this.offer.name = this.form.value.name;
     this.offer.description = this.form.value.description;
@@ -83,9 +86,19 @@ export class EditOfferPage implements OnInit, OnDestroy {
     this.offer.availableFrom = new Date(this.form.value.dateFrom);
     this.offer.availableTo = new Date(this.form.value.dateTo);
     this.offer.sexe = this.form.value.sexe;
-    this.offerService.update(this.offer);
-    this.form.reset();
-    this.router.navigate(["/places/tabs/offers", this.offer.id]);
+
+    this.loadingCtrl
+      .create({
+        message: "Updating place..."
+      })
+      .then(loadingEl => {
+        loadingEl.present();
+        this.offerService.update(this.offer).subscribe(() => {
+          loadingEl.dismiss();
+          this.form.reset();
+          this.router.navigate(["/places/tabs/offers", this.offer.id]);
+        });
+      });
   }
 
   onCancel() {

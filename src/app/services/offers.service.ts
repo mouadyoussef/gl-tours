@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Offer } from "../models/offer.model";
 import { BehaviorSubject, Observable } from "rxjs";
-import { take, map } from "rxjs/operators";
+import { take, map, tap, delay } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root"
@@ -73,13 +73,26 @@ export class OffersService {
   }
 
   add(offer: Offer) {
-    this._offers.pipe(take(1)).subscribe(places => {
-      this._offers.next(places.concat());
-    });
+    return this.offers.pipe(
+      take(1),
+      delay(1000),
+      tap(offers => {
+        this._offers.next(offers.concat(offer));
+      })
+    );
   }
 
-  update(offer: Offer) {
-    this.delete(offer.id);
-    this.add(offer);
+  update(newOffer: Offer) {
+    return this.offers.pipe(
+      take(1),
+      delay(1000),
+      tap(offers => {
+        const updatedOfferIndex = offers.findIndex(o => o.id === newOffer.id);
+        const updatedOffers = [...offers];
+        const oldOffer = updatedOffers[updatedOfferIndex];
+        updatedOffers[updatedOfferIndex] = newOffer;
+        this._offers.next(updatedOffers);
+      })
+    );
   }
 }
