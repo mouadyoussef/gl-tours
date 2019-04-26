@@ -78,7 +78,7 @@ export class NewOfferPage implements OnInit {
       range
     );
     this.offerServices.add(offer);
-
+    this.form.reset();
     this.router.navigate(["/places/tabs/offers", offer.id]);
   }
 

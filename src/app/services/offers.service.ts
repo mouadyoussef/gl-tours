@@ -1,11 +1,13 @@
 import { Injectable } from "@angular/core";
 import { Offer } from "../models/offer.model";
+import { BehaviorSubject, Observable } from "rxjs";
+import { take, map } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root"
 })
 export class OffersService {
-  private _offers: Offer[] = [
+  private _offers = new BehaviorSubject<Offer[]>([
     new Offer(
       1,
       "offer 1",
@@ -45,23 +47,35 @@ export class OffersService {
       "female",
       15
     )
-  ];
+  ]);
   constructor() {}
 
-  get(): Offer[] {
-    return [...this._offers];
+  get offers() {
+    return this._offers.asObservable();
   }
 
-  getById(id: number): Offer {
-    return { ...this._offers.find(o => o.id === id) };
+  getById(id: number) {
+    return this.offers.pipe(
+      take(1),
+      map(offers => {
+        return { ...offers.find(o => o.id === id) };
+      })
+    );
   }
 
   delete(id: number) {
-    this._offers = this._offers.filter(o => o.id !== id);
+    return this.offers.pipe(
+      take(1),
+      map(offers => {
+        return { ...offers.filter(o => o.id !== id) };
+      })
+    );
   }
 
   add(offer: Offer) {
-    this._offers.push(offer);
+    this._offers.pipe(take(1)).subscribe(places => {
+      this._offers.next(places.concat());
+    });
   }
 
   update(offer: Offer) {

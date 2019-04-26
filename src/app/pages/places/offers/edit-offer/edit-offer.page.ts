@@ -1,6 +1,7 @@
-import { Component, OnInit } from "@angular/core";
-import { Offer } from "src/app/models/offer.model";
-import { OffersService } from "src/app/services/offers.service";
+import { Subscription } from "rxjs";
+import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Offer } from "../../../../models/offer.model";
+import { OffersService } from "../../../../services/offers.service";
 import { Router, ActivatedRoute } from "@angular/router";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 
@@ -9,9 +10,10 @@ import { FormGroup, FormControl, Validators } from "@angular/forms";
   templateUrl: "./edit-offer.page.html",
   styleUrls: ["./edit-offer.page.scss"]
 })
-export class EditOfferPage implements OnInit {
+export class EditOfferPage implements OnInit, OnDestroy {
   offer: Offer;
   form: FormGroup;
+  offerSub: Subscription;
 
   constructor(
     private offerService: OffersService,
@@ -25,9 +27,9 @@ export class EditOfferPage implements OnInit {
         this.router.navigate(["/places/tabs/offers"]);
         return;
       }
-      const offerId = parseInt(paramMap.get("offerId"));
-
-      this.offer = this.offerService.getById(offerId);
+      this.offerSub = this.offerService
+        .getById(parseInt(paramMap.get("offerId")))
+        .subscribe(offer => (this.offer = offer));
     });
 
     this.formValidation();
@@ -82,7 +84,7 @@ export class EditOfferPage implements OnInit {
     this.offer.availableTo = new Date(this.form.value.dateTo);
     this.offer.sexe = this.form.value.sexe;
     this.offerService.update(this.offer);
-
+    this.form.reset();
     this.router.navigate(["/places/tabs/offers", this.offer.id]);
   }
 
@@ -94,5 +96,9 @@ export class EditOfferPage implements OnInit {
     const from = new Date(this.form.value.dateFrom);
     const to = new Date(this.form.value.dateTo);
     return to > from;
+  }
+
+  ngOnDestroy(): void {
+    if (this.offerSub) this.offerSub.unsubscribe();
   }
 }
