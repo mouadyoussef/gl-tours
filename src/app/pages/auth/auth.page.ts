@@ -11,17 +11,20 @@ import { NgForm } from "@angular/forms";
 })
 export class AuthPage implements OnInit {
   isLoading = false;
+  email: string;
+  password: string;
+
   constructor(
     private authService: AuthService,
     private router: Router,
     private loadingCtrl: LoadingController
-  ) {}
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   onLogin() {
     this.isLoading = true;
-    this.authService.login();
+    this.authService.login(this.email, this.password);
     this.loadingCtrl
       .create({ keyboardClose: true, message: "Logging in..." })
       .then(elem => {
@@ -36,9 +39,12 @@ export class AuthPage implements OnInit {
 
   onSubmit(form: NgForm) {
     if (!form.valid) return;
+    this.email = form.value.email;
+    this.password = form.value.password;
 
-    const email = form.value.email;
-    const pass = form.value.password;
-    console.log(email, pass);
+    this.authService.login(this.email, this.password).subscribe((data) => {
+      console.log(data);
+
+    });
   }
 }
