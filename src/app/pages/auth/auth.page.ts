@@ -1,7 +1,7 @@
 import { AuthService } from "./../../services/auth.service";
 import { Component, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { LoadingController } from "@ionic/angular";
+import { LoadingController, AlertController } from "@ionic/angular";
 import { NgForm } from "@angular/forms";
 
 @Component({
@@ -17,7 +17,8 @@ export class AuthPage implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private alertCtrl: AlertController,
   ) { }
 
   ngOnInit() { }
@@ -39,12 +40,31 @@ export class AuthPage implements OnInit {
 
   onSubmit(form: NgForm) {
     if (!form.valid) return;
-    this.email = form.value.email;
-    this.password = form.value.password;
 
-    this.authService.login(this.email, this.password).subscribe((data) => {
-      console.log(data);
+    this.isLoading = true;
+    const { email, password } = form.value;
+    this.loadingCtrl
+      .create({ keyboardClose: true, message: "Logging in ..." })
+      .then(elem => {
+        elem.present();
+        this.authService.login(email, password).subscribe(data => {
+          this.isLoading = false;
+          elem.dismiss();
+          this.router.navigateByUrl("/places/tabs/profil/1");
+        }, error => {
+          let message = "";
+          for (const key in error.error.errors) {
+            message += error.error.errors[key];
+            break;
+          }
+          elem.dismiss();
+          this.showAlert(message);
+        });
+      });
+  }
 
-    });
+  showAlert(message: string) {
+    this.alertCtrl.create({ header: "Signup failed", message, buttons: ["Okey"] })
+      .then(el => el.present());
   }
 }
