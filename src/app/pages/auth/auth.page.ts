@@ -23,24 +23,6 @@ export class AuthPage implements OnInit {
 
   ngOnInit() { }
 
-  onLogin() {
-    this.isLoading = true;
-    this.authService.login(this.email, this.password);
-    this.loadingCtrl
-      .create({ keyboardClose: true, message: "Logging in..." })
-      .then(elem => {
-        elem.present();
-        setTimeout(() => {
-          this.isLoading = false;
-          elem.dismiss();
-          this.router.navigateByUrl("/places/tabs/profil/1");
-        }, 2000);
-      }).finally(() => {
-        console.log("fiiiiinaly");
-        this.isLoading = false
-      });
-  }
-
   onSubmit(form: NgForm) {
     if (!form.valid) return;
 
@@ -62,6 +44,7 @@ export class AuthPage implements OnInit {
           }
           elem.dismiss();
           this.showAlert(message);
+          this.isLoading = false;
         });
       });
   }

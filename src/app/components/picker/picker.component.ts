@@ -1,6 +1,8 @@
 import { PlacesService } from "./../../services/places.service";
 import { Component, OnInit, OnChanges, Input } from "@angular/core";
 
+declare var google;
+
 @Component({
   selector: "app-picker",
   templateUrl: "./picker.component.html",
@@ -11,12 +13,9 @@ export class PickerComponent implements OnInit, OnChanges {
   @Input() map;
   @Input() isPickupRequested;
 
-  popup: google.maps.InfoWindow;
-  private pickupMarker: google.maps.Marker;
+  constructor(private placeService: PlacesService) { }
 
-  constructor(private placeService: PlacesService) {}
-
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngOnChanges(changes) {
     this.showMarkers();

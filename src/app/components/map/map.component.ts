@@ -3,6 +3,8 @@ import { Plugins } from "@capacitor/core";
 import { LoadingController } from "@ionic/angular";
 import { Observable } from "rxjs";
 
+declare var google;
+
 @Component({
   selector: "app-map",
   templateUrl: "./map.component.html",
@@ -13,7 +15,7 @@ export class MapComponent implements OnInit {
   public isMapIdle: boolean;
   public currentLocation;
 
-  constructor(public loadingCtrl: LoadingController) {}
+  constructor(public loadingCtrl: LoadingController) { }
 
   ngOnInit() {
     this.map = this.createMap();
