@@ -1,5 +1,7 @@
 {
   "name": "gl-tours",
-  "integrations": {},
+  "integrations": {
+    "capacitor": {}
+  },
   "type": "angular"
 }
