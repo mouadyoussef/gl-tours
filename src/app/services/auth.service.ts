@@ -1,9 +1,10 @@
 import { User } from "./../models/user.model";
 import { Injectable } from "@angular/core";
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject, from } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { map, tap } from 'rxjs/operators';
+import { Plugins } from '@capacitor/core';
 
 interface AuthResponse {
   user: User;
@@ -56,17 +57,31 @@ export class AuthService {
     user.email = userData.user.email;
     user.avatar = userData.user.avatar;
     this._user.next(user);
+    this.storeAuthData(user);
   }
 
   autoLogin() {
-
+    return from(Plugins.Storage.get({ key: "auth" })).pipe(map(data => {
+      if (!data || !data.value)
+        return null;
+      const parsedData = JSON.parse(data.value) as { user: User };
+      return parsedData.user;
+    }), tap(user => {
+      if (user) {
+        this._user.next(user);
+      }
+    }), map(user => {
+      return !!user;
+    }));
   }
 
   logout() {
     this._user.next(null);
+    Plugins.Storage.remove({ key: "auth" });
   }
 
-  private storeAuthData(userId: number, token: string, tokenExpirationDate: Date) {
-
+  private storeAuthData(user: User) {
+    let data = JSON.stringify({ user });
+    Plugins.Storage.set({ key: "auth", value: data });
   }
 }
