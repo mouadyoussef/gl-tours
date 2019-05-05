@@ -16,12 +16,16 @@
   <ion-grid no-padding>
     <ion-row>
       <ion-col no-padding>
-        <ion-img src="/assets/shapes.svg"></ion-img>
+        <ion-img src="{{ place.picture }}" class="img-200"></ion-img>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
-        <h1 text-center>{{ place.title }}</h1>
+        <ion-card>
+          <ion-card-content>
+            <p>{{ place.description }}</p>
+          </ion-card-content>
+        </ion-card>
       </ion-col>
     </ion-row>
   </ion-grid>

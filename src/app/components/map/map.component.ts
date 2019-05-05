@@ -1,3 +1,4 @@
+import { Marker } from "./../../models/marker.model";
 import { Component, OnInit, Input, Renderer2 } from "@angular/core";
 import { Plugins } from "@capacitor/core";
 import { LoadingController } from "@ionic/angular";
@@ -15,7 +16,7 @@ export class MapComponent implements OnInit {
   public isMapIdle: boolean;
   public currentLocation;
 
-  constructor(public loadingCtrl: LoadingController) { }
+  constructor(public loadingCtrl: LoadingController) {}
 
   ngOnInit() {
     this.map = this.createMap();

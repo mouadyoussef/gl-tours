@@ -1,5 +1,6 @@
 import { PlacesService } from "./../../services/places.service";
 import { Component, OnInit, OnChanges, Input } from "@angular/core";
+import { Place } from "../../models/place.model";
 
 declare var google;
 
@@ -9,33 +10,41 @@ declare var google;
   styleUrls: ["./picker.component.scss"]
 })
 export class PickerComponent implements OnInit, OnChanges {
-  @Input() isPinSet: boolean;
   @Input() map;
-  @Input() isPickupRequested;
+  @Input() type;
+  places: Place[];
 
-  constructor(private placeService: PlacesService) { }
+  constructor(private placeService: PlacesService) {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   ngOnChanges(changes) {
     this.showMarkers();
   }
 
   showMarkers() {
-    this.placeService.getPlaces().forEach(place => {
-      const pickupMarker = new google.maps.Marker({
-        map: this.map,
-        position: new google.maps.LatLng(place.marker.lat, place.marker.lng)
-      });
+    this.placeService.getPlaces().subscribe(places => {
+      places.forEach(place => {
+        const pickupMarker = new google.maps.Marker({
+          map: this.map,
+          position: new google.maps.LatLng(place.latitude, place.longitude)
+        });
 
-      const popup = new google.maps.InfoWindow({
-        content: `<h4><a href="/places/tabs/discover/1">${place.name} </h4></a>
-                  <p> ${place.description} </p>`
-      });
+        const popup = new google.maps.InfoWindow({
+          content: `<div>
+                        <div><h3><a href="/places/tabs/discover/${place.id}">${
+            place.name
+          }</a></h3></div><div>
+                      <ion-img src="http://localhost:8000/storage/${
+                        place.picture
+                      }"></ion-img></div>
+                    </div>`
+        });
 
-      google.maps.event.addListener(pickupMarker, "click", () => {
-        popup.open(this.map, pickupMarker);
-        setTimeout(() => popup.close(), 5000);
+        google.maps.event.addListener(pickupMarker, "click", () => {
+          popup.open(this.map, pickupMarker);
+          //setTimeout(() => popup.close(), 5000);
+        });
       });
     });
   }

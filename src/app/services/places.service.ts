@@ -1,10 +1,19 @@
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { Place } from "./../models/place.model";
 import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
+import { environment } from "../../environments/environment";
 
+const httpOptions = {
+  headers: new HttpHeaders({
+    "Content-type": "application/json"
+  })
+};
 @Injectable({
   providedIn: "root"
 })
 export class PlacesService {
+  /*
   private _places: Place[] = [
     new Place(1, "AlQuaraouiyin", "description Place 1", "Place1.jpg", {
       lat: 34.0339443,
@@ -35,13 +44,15 @@ export class PlacesService {
       lng: -4.9752053
     })
   ];
-  constructor() {}
+  */
+  constructor(private http: HttpClient) {}
 
-  getPlaces(): Place[] {
-    return [...this._places];
+  getPlaces(): Observable<Place[]> {
+    return this.http.get<Place[]>(environment.apiUrl + "places", httpOptions);
   }
 
-  getById(id: number): Place {
-    return { ...this._places.find(p => p.id === id) };
+  getById(id: number): Observable<Place> {
+    const url: string = environment.apiUrl + "places/" + id;
+    return this.http.get<Place>(url, httpOptions);
   }
 }

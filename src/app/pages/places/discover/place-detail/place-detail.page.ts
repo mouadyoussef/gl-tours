@@ -24,9 +24,10 @@ export class PlaceDetailPage implements OnInit {
         this.navCtrl.navigateBack("/places/tabs/discover");
         return;
       }
-      this.place = this.placesService.getById(
-        parseInt(paramMap.get("placeId"))
-      );
+
+      this.placesService
+        .getById(parseInt(paramMap.get("placeId")))
+        .subscribe(place => (this.place = place));
     });
   }
 }

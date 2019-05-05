@@ -5,6 +5,7 @@ export class Place {
     public name: string,
     public description: string,
     public picture: string,
-    public marker: Marker
+    public latitude: number,
+    public longitude: number
   ) {}
 }
