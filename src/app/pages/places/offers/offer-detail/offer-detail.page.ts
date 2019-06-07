@@ -18,7 +18,7 @@ export class OfferDetailPage implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private offerService: OffersService
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe(paramMap => {
@@ -26,8 +26,8 @@ export class OfferDetailPage implements OnInit, OnDestroy {
         this.navCtrl.navigateBack("/places/tabs/offers");
         return;
       }
-      this.offerSub = this.offerService
-        .getById(parseInt(paramMap.get("offerId")))
+      this.offerService
+        .getOffer(paramMap.get("offerId"))
         .subscribe(offer => (this.offer = offer));
     });
   }

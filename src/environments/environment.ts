@@ -4,9 +4,9 @@
 
 export const environment = {
   production: false,
-  apiUrl: "http://localhost:8000/api/",
-  googleMapsAPIKey: "AIzaSyBVwzZ5HObb_TWwPcFGBnuXChFbZKpG4CQ",
-  apiMapKey: "AIzaSyBVwzZ5HObb_TWwPcFGBnuXChFbZKpG4CQ"
+  apiUrl: "http://192.168.1.52:8000/api/",
+  googleMapsAPIKey: "AIzaSyDdbAFyZLnVobr1GTwgAeRQXM5CJORePNQ",
+  apiMapKey: "AIzaSyDdbAFyZLnVobr1GTwgAeRQXM5CJORePNQ"
 };
 
 /*

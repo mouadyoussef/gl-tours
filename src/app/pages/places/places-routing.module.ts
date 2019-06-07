@@ -57,8 +57,7 @@ const routes: Routes = [
           {
             path: "edit/:offerId",
             loadChildren:
-              "./offers/edit-offer/edit-offer.module#EditOfferPageModule",
-            canLoad: [AuthGuard]
+              "./offers/edit-offer/edit-offer.module#EditOfferPageModule"
           },
           {
             path: ":offerId",
@@ -85,4 +84,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
 })
-export class PlacesRoutingModule {}
+export class PlacesRoutingModule { }

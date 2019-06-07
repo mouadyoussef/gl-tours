@@ -3,10 +3,10 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/places/tabs/offers"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ offer.name }}</ion-title>
+    <ion-title *ngIf="offer">{{ offer.title }}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button [routerLink]="['/places/tabs/offers/edit/', offer.id]">
-        <ion-icon name="create" slot="icon-only"></ion-icon>
+      <ion-button *ngIf="offer" routerLink="/places/tabs/offers/edit/{{ offer.id }}">
+        <ion-icon name="checkmark" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -16,12 +16,16 @@
   <ion-grid no-padding>
     <ion-row>
       <ion-col no-padding>
-        <ion-img src="/assets/shapes.svg"></ion-img>
+        <ion-img *ngIf="offer" src="{{ offer.picture }}"></ion-img>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
-        <h1 text-center>{{ offer.title }}</h1>
+        <ion-card>
+          <ion-card-content *ngIf="offer">
+            <p>{{ offer.description }}</p>
+          </ion-card-content>
+        </ion-card>
       </ion-col>
     </ion-row>
   </ion-grid>

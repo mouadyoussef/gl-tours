@@ -45,14 +45,13 @@ export class PlacesService {
     })
   ];
   */
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getPlaces(): Observable<Place[]> {
-    return this.http.get<Place[]>(environment.apiUrl + "places", httpOptions);
+    return this.http.get<Place[]>(environment.apiUrl + "places");
   }
 
-  getById(id: number): Observable<Place> {
-    const url: string = environment.apiUrl + "places/" + id;
-    return this.http.get<Place>(url, httpOptions);
+  getById(id: string): Observable<Place> {
+    return this.http.get<Place>(`${environment.apiUrl}places/${id}`);
   }
 }
