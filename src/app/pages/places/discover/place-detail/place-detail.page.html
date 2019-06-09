@@ -3,9 +3,9 @@
     <ion-buttons slot="start">
       <ion-back-button defaultHref="/places/tabs/discover"></ion-back-button>
     </ion-buttons>
-    <ion-title>{{ place.name }}</ion-title>
+    <ion-title *ngIf="place">{{ place.title }}</ion-title>
     <ion-buttons slot="primary">
-      <ion-button>
+      <ion-button (click)="onFavorite()">
         <ion-icon name="star" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -16,13 +16,13 @@
   <ion-grid no-padding>
     <ion-row>
       <ion-col no-padding>
-        <ion-img src="{{ place.picture }}" class="img-200"></ion-img>
+        <ion-img *ngIf="place" src="{{ place.picture }}" class="img-200"></ion-img>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col>
         <ion-card>
-          <ion-card-content>
+          <ion-card-content *ngIf="place">
             <p>{{ place.description }}</p>
           </ion-card-content>
         </ion-card>
