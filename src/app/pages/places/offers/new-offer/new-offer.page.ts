@@ -6,6 +6,27 @@ import { Offer } from "../../../../models/offer.model";
 import { OffersService } from "../../../../services/offers.service";
 import { LoadingController } from "@ionic/angular";
 
+function base64toBlob(base64Data, contentType) {
+  contentType = contentType || "";
+  const sliceSize = 1024;
+  const byteCharacters = window.atob(base64Data);
+  const bytesLength = byteCharacters.length;
+  const slicesCount = Math.ceil(bytesLength / sliceSize);
+  const byteArrays = new Array(slicesCount);
+
+  for (let sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
+    const begin = sliceIndex * sliceSize;
+    const end = Math.min(begin + sliceSize, bytesLength);
+
+    const bytes = new Array(end - begin);
+    for (let offset = begin, i = 0; offset < end; ++i, ++offset) {
+      bytes[i] = byteCharacters[offset].charCodeAt(0);
+    }
+    byteArrays[sliceIndex] = new Uint8Array(bytes);
+  }
+  return new Blob(byteArrays, { type: contentType });
+}
+
 @Component({
   selector: "app-new-offer",
   templateUrl: "./new-offer.page.html",
@@ -18,11 +39,11 @@ export class NewOfferPage implements OnInit {
     private offerServices: OffersService,
     private router: Router,
     private loadingCtrl: LoadingController
-  ) {}
+  ) { }
 
   ngOnInit() {
     this.form = new FormGroup({
-      name: new FormControl(null, {
+      title: new FormControl(null, {
         updateOn: "blur",
         validators: [Validators.required]
       }),
@@ -30,67 +51,47 @@ export class NewOfferPage implements OnInit {
         updateOn: "blur",
         validators: [Validators.required, Validators.maxLength(180)]
       }),
-      dateFrom: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required]
-      }),
-      dateTo: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required]
-      }),
-      minAge: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required]
-      }),
-      maxAge: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required]
-      }),
-      range: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required]
-      }),
-      sexe: new FormControl(null, {
-        updateOn: "blur"
-      })
+      image: new FormControl(null)
     });
   }
 
+  onImagePicked(imageData: string | File) {
+    let imageFile;
+    if (typeof imageData === "string") {
+      try {
+        imageFile = base64toBlob(
+          imageData.replace("data:image/jpeg;base64,", ""),
+          "image/jpeg"
+        );
+      } catch (error) {
+        console.log(error);
+        return;
+      }
+    } else {
+      imageFile = imageData;
+    }
+    this.form.patchValue({ image: imageFile });
+  }
+
   sendNewOffer() {
-    if (!(this.form.valid && this.dateValidation())) {
+    if (!this.form.valid || !this.form.get("image").value) {
       return;
     }
-    const offer = new Offer(
-      4,
-      this.form.value.name,
-      this.form.value.description,
-      null,
-      null,
-      parseInt(this.form.value.minAge),
-      parseInt(this.form.value.maxAge),
-      new Date(this.form.value.dateFrom),
-      new Date(this.form.value.dateTo),
-      this.form.value.sexe,
-      this.form.value.range
-    );
-
     this.loadingCtrl
       .create({
-        message: "Creating offer..."
+        message: "Sending new offer..."
       })
       .then(loadingEl => {
         loadingEl.present();
-        this.offerServices.add(offer).subscribe(() => {
-          loadingEl.dismiss();
-          this.form.reset();
-          this.router.navigate(["/places/tabs/offers", offer.id]);
-        });
+        this.offerServices
+          .add(
+            new Offer(null, this.form.value.title, this.form.value.description)
+          )
+          .subscribe(() => {
+            loadingEl.dismiss();
+            this.form.reset();
+            this.router.navigate(["/places/tabs/offers"]);
+          });
       });
-  }
-
-  dateValidation() {
-    const from = new Date(this.form.value.dateFrom);
-    const to = new Date(this.form.value.dateTo);
-    return to > from;
   }
 }

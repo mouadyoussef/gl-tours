@@ -34,6 +34,8 @@ export class MapComponent implements OnInit {
   }
 
   getLocation() {
+    console.log("==========> getLocation()");
+
     let options = { timeout: 10000, enableHighAccuracy: true };
     let locationObs = new Observable(observable => {
       Plugins.Geolocation.getCurrentPosition(options).then(resp => {

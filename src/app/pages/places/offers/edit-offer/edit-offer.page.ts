@@ -4,7 +4,11 @@ import { Offer } from "../../../../models/offer.model";
 import { OffersService } from "../../../../services/offers.service";
 import { Router, ActivatedRoute } from "@angular/router";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { LoadingController } from "@ionic/angular";
+import {
+  LoadingController,
+  NavController,
+  AlertController
+} from "@ionic/angular";
 
 @Component({
   selector: "app-edit-offer",
@@ -13,28 +17,63 @@ import { LoadingController } from "@ionic/angular";
 })
 export class EditOfferPage implements OnInit, OnDestroy {
   offer: Offer;
+  offerId: string;
   form: FormGroup;
   offerSub: Subscription;
+  isLoading: boolean = false;
 
   constructor(
     private offerService: OffersService,
     private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private loadingCtrl: LoadingController
-  ) {}
+    private loadingCtrl: LoadingController,
+    private route: ActivatedRoute,
+    private navCtrl: NavController,
+    private alertCtrl: AlertController
+  ) { }
 
   ngOnInit() {
-    this.activatedRoute.paramMap.subscribe(paramMap => {
+    this.route.paramMap.subscribe(paramMap => {
       if (!paramMap.has("offerId")) {
-        this.router.navigate(["/places/tabs/offers"]);
+        this.navCtrl.navigateBack("/places/tabs/offers");
         return;
       }
-      this.offerSub = this.offerService
-        .getById(parseInt(paramMap.get("offerId")))
-        .subscribe(offer => (this.offer = offer));
+      this.offerId = paramMap.get("offerId");
+      this.isLoading = true;
+      (this.offerSub = this.offerService
+        .getOffer(this.offerId)
+        .subscribe(offer => {
+          this.offer = offer;
+          this.form = new FormGroup({
+            title: new FormControl(this.offer.title, {
+              updateOn: "blur",
+              validators: [Validators.required]
+            }),
+            description: new FormControl(this.offer.description, {
+              updateOn: "blur",
+              validators: [Validators.required, Validators.maxLength(180)]
+            })
+          });
+          this.isLoading = false;
+        })),
+        error => {
+          this.alertCtrl
+            .create({
+              header: "An error occurred!",
+              message: "Place could not be fetched. Please try again later.",
+              buttons: [
+                {
+                  text: "Okay",
+                  handler: () => {
+                    this.router.navigate(["/places/tabs/offers"]);
+                  }
+                }
+              ]
+            })
+            .then(alertEl => {
+              alertEl.present();
+            });
+        };
     });
-
-    this.formValidation();
   }
 
   formValidation() {
@@ -46,72 +85,39 @@ export class EditOfferPage implements OnInit, OnDestroy {
       description: new FormControl(null, {
         updateOn: "blur",
         validators: [Validators.required, Validators.maxLength(180)]
-      }),
-      dateFrom: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required]
-      }),
-      dateTo: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required]
-      }),
-      minAge: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required]
-      }),
-      maxAge: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required]
-      }),
-      range: new FormControl(null, {
-        updateOn: "blur",
-        validators: [Validators.required]
-      }),
-      sexe: new FormControl(null, {
-        updateOn: "blur"
       })
     });
   }
 
-  updateOffer() {
-    if (!(this.form.valid && this.dateValidation())) {
+  onUpdateOffer() {
+    if (!this.form.valid) {
       return;
     }
-
-    console.log(this.form);
-    this.offer.name = this.form.value.name;
-    this.offer.description = this.form.value.description;
-    this.offer.minAge = parseInt(this.form.value.minAge);
-    this.offer.maxAge = parseInt(this.form.value.maxAge);
-    this.offer.availableFrom = new Date(this.form.value.dateFrom);
-    this.offer.availableTo = new Date(this.form.value.dateTo);
-    this.offer.sexe = this.form.value.sexe;
-
     this.loadingCtrl
       .create({
         message: "Updating place..."
       })
       .then(loadingEl => {
         loadingEl.present();
-        this.offerService.update(this.offer).subscribe(() => {
-          loadingEl.dismiss();
-          this.form.reset();
-          this.router.navigate(["/places/tabs/offers", this.offer.id]);
-        });
+        this.offerService
+          .update(
+            new Offer(
+              this.offer.id,
+              this.form.value.title,
+              this.form.value.description
+            )
+          )
+          .subscribe(() => {
+            loadingEl.dismiss();
+            this.form.reset();
+            this.router.navigate(["/places/tabs/offers"]);
+          });
       });
   }
 
-  onCancel() {
-    this.router.navigate(["/places/tabs/offers", this.offer.id]);
-  }
-
-  dateValidation() {
-    const from = new Date(this.form.value.dateFrom);
-    const to = new Date(this.form.value.dateTo);
-    return to > from;
-  }
-
-  ngOnDestroy(): void {
-    if (this.offerSub) this.offerSub.unsubscribe();
+  ngOnDestroy() {
+    if (this.offerSub) {
+      this.offerSub.unsubscribe();
+    }
   }
 }

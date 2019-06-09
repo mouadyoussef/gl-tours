@@ -1,97 +1,122 @@
+import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Offer } from "../models/offer.model";
-import { BehaviorSubject, Observable } from "rxjs";
-import { take, map, tap, delay } from "rxjs/operators";
+import { BehaviorSubject, Observable, of } from "rxjs";
+import { take, map, tap, delay, switchMap } from "rxjs/operators";
+import { environment } from "src/environments/environment";
 
 @Injectable({
   providedIn: "root"
 })
 export class OffersService {
-  private _offers = new BehaviorSubject<Offer[]>([
-    new Offer(
-      1,
-      "offer 1",
-      "description offer 1",
-      "offer1.jpg",
-      "LC WaiKIKI",
-      20,
-      24,
-      new Date("2019-05-25"),
-      new Date("2019-07-01"),
-      "male",
-      5
-    ),
-    new Offer(
-      2,
-      "offer 2",
-      "description offer 2",
-      "offer2.jpg",
-      "KIABI",
-      20,
-      30,
-      new Date("2019-05-25"),
-      new Date("2019-09-20"),
-      "male",
-      10
-    ),
-    new Offer(
-      3,
-      "offer 3",
-      "description offer 3",
-      "offer3.jpg",
-      "Nike Fès",
-      30,
-      40,
-      new Date("2019-05-25"),
-      new Date("2020-01-01"),
-      "female",
-      15
-    )
-  ]);
-  constructor() {}
+  private _offers = new BehaviorSubject<Offer[]>(null);
+
+  constructor(private http: HttpClient) { }
 
   get offers() {
     return this._offers.asObservable();
   }
 
-  getById(id: number) {
-    return this.offers.pipe(
-      take(1),
-      map(offers => {
-        return { ...offers.find(o => o.id === id) };
+  getOffer(id: string) {
+    return this.http.get<Offer>(`${environment.apiUrl}ads/${id}`).pipe(
+      map(offerData => {
+        return new Offer(
+          id,
+          offerData.title,
+          offerData.description,
+          offerData.picture
+        );
       })
     );
   }
 
-  delete(id: number) {
-    return this.offers.pipe(
-      take(1),
-      map(offers => {
-        return { ...offers.filter(o => o.id !== id) };
-      })
-    );
+  add(newOffer: Offer) {
+    console.log("offer ...", newOffer);
+
+    let generatedId: number;
+    return this.http.post<{ id: number }>(`${environment.apiUrl}ads`, {
+      ...newOffer,
+      id: null
+    });
   }
 
-  add(offer: Offer) {
-    return this.offers.pipe(
-      take(1),
-      delay(1000),
-      tap(offers => {
-        this._offers.next(offers.concat(offer));
-      })
+  fetchOffers() {
+    return this.http
+      .get<{ [key: number]: Offer }>(`${environment.apiUrl}ads`)
+      .pipe(
+        map(offerData => {
+          console.log(offerData);
+
+          const offers = [];
+          for (const key in offerData) {
+            if (offerData.hasOwnProperty(key)) {
+              offers.push(
+                new Offer(
+                  offerData[key].id,
+                  offerData[key].title,
+                  offerData[key].description,
+                  offerData[key].picture
+                )
+              );
+            }
+          }
+          return offers;
+        }),
+        tap(offers => {
+          this._offers.next(offers);
+        })
+      );
+  }
+
+  uploadImage(image: File) {
+    const uploadData = new FormData();
+    uploadData.append("image", image);
+
+    return this.http.post<{ imageUrl: string; imagePath: string }>(
+      "",
+      uploadData
     );
   }
 
   update(newOffer: Offer) {
+    let updatedOffers: Offer[];
     return this.offers.pipe(
       take(1),
-      delay(1000),
-      tap(offers => {
+      switchMap(offers => {
+        if (!offers || offers.length <= 0) {
+          return this.fetchOffers();
+        } else {
+          return of(offers);
+        }
+      }),
+      switchMap(offers => {
         const updatedOfferIndex = offers.findIndex(o => o.id === newOffer.id);
-        const updatedOffers = [...offers];
-        const oldOffer = updatedOffers[updatedOfferIndex];
-        updatedOffers[updatedOfferIndex] = newOffer;
+        updatedOffers = [...offers];
+        const oldPlace = updatedOffers[updatedOfferIndex];
+        updatedOffers[updatedOfferIndex] = new Offer(
+          oldPlace.id,
+          newOffer.title,
+          newOffer.description
+        );
+        return this.http.put(`${environment.apiUrl}ads/${newOffer.id}`, {
+          ...updatedOffers[updatedOfferIndex],
+          id: null
+        });
+      }),
+      tap(() => {
         this._offers.next(updatedOffers);
+      })
+    );
+  }
+
+  delete(id: string) {
+    return this.http.delete(`${environment.apiUrl}ads/${id}`).pipe(
+      switchMap(() => {
+        return this.offers;
+      }),
+      take(1),
+      tap(offers => {
+        this._offers.next(offers.filter(b => b.id !== id));
       })
     );
   }
