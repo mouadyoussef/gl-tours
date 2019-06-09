@@ -1,3 +1,4 @@
+import { FavoritePlacesService } from "./../../../../services/favorite-places.service";
 import { PlacesService } from "src/app/services/places.service";
 import { Component, OnInit } from "@angular/core";
 import { Place } from "../../../../models/place.model";
@@ -12,11 +13,13 @@ import { ActivatedRoute } from "@angular/router";
 })
 export class PlaceDetailPage implements OnInit {
   place: Place;
+
   constructor(
     private placesService: PlacesService,
     private route: ActivatedRoute,
-    private navCtrl: NavController
-  ) {}
+    private navCtrl: NavController,
+    private favPlaceService: FavoritePlacesService
+  ) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe(paramMap => {
@@ -24,10 +27,14 @@ export class PlaceDetailPage implements OnInit {
         this.navCtrl.navigateBack("/places/tabs/discover");
         return;
       }
-
       this.placesService
-        .getById(parseInt(paramMap.get("placeId")))
+        .getById(paramMap.get("placeId"))
         .subscribe(place => (this.place = place));
     });
+  }
+
+  onFavorite() {
+    console.log(this.place.id);
+    this.favPlaceService.addPlace(this.place);
   }
 }
