@@ -6,5 +6,6 @@ export class Place {
     public description: string,
     public picture: string,
     public location: any,
-  ) { }
+    public ads: any
+  ) {}
 }

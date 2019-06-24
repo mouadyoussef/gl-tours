@@ -35,14 +35,13 @@ export class MapComponent implements OnInit {
 
   getLocation() {
     console.log("==========> getLocation()");
-
     let options = { timeout: 10000, enableHighAccuracy: true };
     let locationObs = new Observable(observable => {
       Plugins.Geolocation.getCurrentPosition(options).then(resp => {
         let lat = resp.coords.latitude;
         let lng = resp.coords.longitude;
         console.log("lat " + lat + " == " + "long " + lng);
-        let location = new google.maps.LatLng(lat, lng);
+        let location = new google.maps.LatLng(34.0334371, -4.9768663);
         console.log("current location " + location);
         observable.next(location);
       });

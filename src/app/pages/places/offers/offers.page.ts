@@ -13,12 +13,13 @@ export class OffersPage implements OnInit, OnDestroy {
   offers: Offer[];
   offersSub: Subscription;
   isLoading: boolean = false;
+  size: number = 0;
 
   constructor(
     private offerService: OffersService,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.loadingCtrl
@@ -28,23 +29,30 @@ export class OffersPage implements OnInit, OnDestroy {
       })
       .then(elem => {
         elem.present();
-        this.offersSub = this.offerService.offers.subscribe(
-          offers => {
-            this.offers = offers;
-            elem.dismiss();
-          },
-          error => {
-            let message = "";
-            console.log(error);
-            for (const key in error.error.errors) {
-              message += error.error.errors[key];
-              break;
+        setInterval(() => {
+          console.log("tttttttttttttttttt");
+          this.offersSub = this.offerService.offers.subscribe(
+            offers => {
+              this.offers = offers;
+              elem.dismiss();
+              if (this.size != this.offers.length) {
+                this.size = this.offers.length;
+                this.showAlert("New offers ...");
+              }
+            },
+            error => {
+              let message = "";
+              console.log(error);
+              for (const key in error.error.errors) {
+                message += error.error.errors[key];
+                break;
+              }
+              elem.dismiss();
+              this.showAlert(message);
+              this.isLoading = false;
             }
-            elem.dismiss();
-            this.showAlert(message);
-            this.isLoading = false;
-          }
-        );
+          );
+        }, 5000);
       });
   }
 

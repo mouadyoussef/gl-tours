@@ -5,6 +5,7 @@ import { Place } from "../../../../models/place.model";
 import { Route } from "@angular/compiler/src/core";
 import { NavController } from "@ionic/angular";
 import { ActivatedRoute } from "@angular/router";
+import { Offer } from "src/app/models/offer.model";
 
 @Component({
   selector: "app-place-detail",
@@ -13,13 +14,14 @@ import { ActivatedRoute } from "@angular/router";
 })
 export class PlaceDetailPage implements OnInit {
   place: Place;
+  offers: Offer[];
 
   constructor(
     private placesService: PlacesService,
     private route: ActivatedRoute,
     private navCtrl: NavController,
     private favPlaceService: FavoritePlacesService
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe(paramMap => {
@@ -27,9 +29,12 @@ export class PlaceDetailPage implements OnInit {
         this.navCtrl.navigateBack("/places/tabs/discover");
         return;
       }
-      this.placesService
-        .getById(paramMap.get("placeId"))
-        .subscribe(place => (this.place = place));
+      this.placesService.getPlace(paramMap.get("placeId")).subscribe(place => {
+        this.place = place;
+        this.offers = place.ads;
+        console.log(this.offers);
+
+      });
     });
   }
 

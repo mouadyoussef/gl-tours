@@ -11,7 +11,7 @@ import { environment } from "src/environments/environment";
 export class OffersService {
   private _offers = new BehaviorSubject<Offer[]>(null);
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   get offers() {
     return this._offers.asObservable();
@@ -24,7 +24,9 @@ export class OffersService {
           id,
           offerData.title,
           offerData.description,
-          offerData.picture
+          offerData.picture,
+          offerData.date,
+          offerData.place_id
         );
       })
     );
@@ -55,7 +57,9 @@ export class OffersService {
                   offerData[key].id,
                   offerData[key].title,
                   offerData[key].description,
-                  offerData[key].picture
+                  offerData[key].picture,
+                  offerData[key].date,
+                  offerData[key].place_id
                 )
               );
             }
@@ -71,7 +75,6 @@ export class OffersService {
   uploadImage(image: File) {
     const uploadData = new FormData();
     uploadData.append("image", image);
-
     return this.http.post<{ imageUrl: string; imagePath: string }>(
       "",
       uploadData
