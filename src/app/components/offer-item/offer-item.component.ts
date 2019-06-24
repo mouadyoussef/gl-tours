@@ -17,14 +17,13 @@ import { OffersService } from "src/app/services/offers.service";
 export class OfferItemComponent implements OnInit {
   @Input() offerItem: Offer;
   constructor(
-    private router: Router,
     private offerServices: OffersService,
     private loadingCtrl: LoadingController,
     private alertCtrl: AlertController,
     private actionSheetCtrl: ActionSheetController
-  ) { }
+  ) {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   onDeleteOffer(id, slidingItem: IonItemSliding) {
     slidingItem.close();

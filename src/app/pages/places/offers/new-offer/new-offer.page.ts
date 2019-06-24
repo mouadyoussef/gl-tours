@@ -34,12 +34,13 @@ function base64toBlob(base64Data, contentType) {
 })
 export class NewOfferPage implements OnInit {
   form: FormGroup;
+  endDate: string;
 
   constructor(
     private offerServices: OffersService,
     private router: Router,
     private loadingCtrl: LoadingController
-  ) { }
+  ) {}
 
   ngOnInit() {
     this.form = new FormGroup({
@@ -50,6 +51,10 @@ export class NewOfferPage implements OnInit {
       description: new FormControl(null, {
         updateOn: "blur",
         validators: [Validators.required, Validators.maxLength(180)]
+      }),
+      dateTo: new FormControl(null, {
+        updateOn: "blur",
+        validators: [Validators.required]
       }),
       image: new FormControl(null)
     });
@@ -85,7 +90,14 @@ export class NewOfferPage implements OnInit {
         loadingEl.present();
         this.offerServices
           .add(
-            new Offer(null, this.form.value.title, this.form.value.description)
+            new Offer(
+              null,
+              this.form.value.title,
+              this.form.value.description,
+              "ads/April2019/promo1.png",
+              new Date(this.form.value.dateTo),
+              "5cfd2b8058b105489bbfb6ed"
+            )
           )
           .subscribe(() => {
             loadingEl.dismiss();
